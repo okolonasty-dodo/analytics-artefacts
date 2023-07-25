@@ -1,9 +1,11 @@
 import json
 import pandas as pd
+import plotly.express as px
+from dash import Dash, dcc, html
+
 
 f = open("Russia_regions.geojson", "r")
 geo_json = json.loads(f.read())
-
 
 geo_json_regions = [geo_json["features"][i]["properties"]["region"] for i in range(len(geo_json["features"]))]
 
@@ -11,7 +13,6 @@ data = pd.read_csv("Sessions_by_City_2023_06_21.csv")
 data = data.fillna("NaN")
 data["ClientCity"] = data["ClientCity"].str.replace('ё', 'e', regex=False)
 data["City"] = data.ClientCity.apply(lambda x: x.split(" (")[0])
-
 
 regions = pd.read_csv("Города и Регионы России - main.csv")
 regions["Город"] = regions["Город"].str.replace('ё', 'e', regex=False)
@@ -27,15 +28,10 @@ for reg in data_regions:
 
 regions["NewRegion"] = new_regions
 data = pd.merge(data, regions, how = "left", left_on = "City", right_on = "Город" )
-data.head()
 
 d = data.groupby(by = ["NewRegion"])[["MenuVisited_Sessions", "OrderCreated_Sessions", "OrderCanceled_Sessions"]].sum().reset_index()
 d["menu_order"] = round(d["OrderCreated_Sessions"]  / d["MenuVisited_Sessions"] * 100, 1)
 d["create_cancel_order"] = round(d["OrderCanceled_Sessions"] / d["OrderCreated_Sessions"] * 100, 1)
-d.head()
-
-
-import plotly.express as px
 
 fig = px.choropleth_mapbox(d, geojson=geo_json, locations='NewRegion',
                            color='menu_order', featureidkey = "properties.region",
@@ -69,32 +65,14 @@ fig_canceled = px.choropleth_mapbox(d, geojson=geo_json, locations='NewRegion',
                           )
 fig_canceled.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
-
-#from dash import Dash, html, dcc, callback, Output, Input
-from dash import Dash, dcc, html, Input, Output, callback
-import dash_auth
-import base64
-import datetime
-import io
-import plotly.express as px
-import pandas as pd
-
-
-# In[ ]:
-
-
 PORT = 8005
-#ADDRESS = 127.0.0.1
-
-
 app = Dash(__name__)
-
 app.layout = html.Div(
     children=[
     html.H2(
         children='Конверсия Меню-Заказ'
     ),
-    html.A("Visit my Notion page for more...", href='https://plot.ly', target="_blank"),
+    html.A("Моя страница в ноушне", href='https://www.notion.so/dodobrands/05321e94ff5d4d12a29e5651822f3bae', target="_blank"),
     dcc.Graph(
         id='example-graph',
         figure=fig
