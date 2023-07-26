@@ -44,8 +44,8 @@ fig = px.choropleth_mapbox(d, geojson=geo_json, locations='NewRegion',
                            opacity=0.8,
                            labels={'menu_order':'Конверсия меню-заказ',
                                   "NewRegion": "регион"},
-                           #width = 1400,
-                           #height = 700
+                           width = 1400,
+                           height = 700
                           )
 fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
@@ -72,13 +72,14 @@ app.layout = html.Div(
     html.H2(
         children='Конверсия Меню-Заказ'
     ),
-    html.A("Моя страница в ноушне", href='https://www.notion.so/dodobrands/05321e94ff5d4d12a29e5651822f3bae', target="_blank"),
+    html.A("Моя страница в ноушне",
+           href='https://www.notion.so/dodobrands/05321e94ff5d4d12a29e5651822f3bae',
+           target="_blank"),
     dcc.Graph(
         id='example-graph',
         figure=fig
     ),   
 ])
-
 
 if __name__ == '__main__':
     app.run(port=PORT, debug=False)
