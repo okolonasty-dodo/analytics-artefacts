@@ -14,7 +14,7 @@ data = data.fillna("NaN")
 data["ClientCity"] = data["ClientCity"].str.replace('ё', 'e', regex=False)
 data["City"] = data.ClientCity.apply(lambda x: x.split(" (")[0])
 
-regions = pd.read_csv("Города и Регионы России - main.csv")
+regions = pd.read_csv("Russia_regions_and_cities.csv")
 regions["Город"] = regions["Город"].str.replace('ё', 'e', regex=False)
 regions["reg"] = regions["Регион"].apply(lambda x: x.split()[0])
 data_regions = list(regions["reg"])
